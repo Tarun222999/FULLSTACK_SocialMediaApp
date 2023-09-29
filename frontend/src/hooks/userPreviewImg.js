@@ -25,7 +25,7 @@ const userPreviewImg = () => {
             setImgUrl(null);
         }
     };
-    return { handleImageChange, imgUrl };
+    return { handleImageChange, imgUrl, setImgUrl };
 };
 
 export default userPreviewImg;

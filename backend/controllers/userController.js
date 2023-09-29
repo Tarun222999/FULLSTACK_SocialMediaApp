@@ -80,8 +80,10 @@ export const logoutUser = (req, res) => {
 
 export const followUnfollowUser = async (req, res) => {
     try {
+        //user trying to follow a user with id
         const { id } = req.params;
         const userToModify = await User.findById(id);
+        //current user
         const currentUser = await User.findById(req.user._id);
 
         if (id === req.user._id.toString())
@@ -99,7 +101,7 @@ export const followUnfollowUser = async (req, res) => {
             //for this  pull and push operation in monogdb can be used
 
 
-            await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } })
+            await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
             await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
             res.status(200).json({ message: "User unfollowed successfully" });
         } else {

@@ -23,7 +23,7 @@ cloudinary.config({
 
 
 //middleware that runs bettwen req and res
-app.use(express.json()) //to pasre the json data in req.bosy
+app.use(express.json({ limit: "50mb" })) //to pasre the json data in req.bosy
 app.use(express.urlencoded({ extended: true }))//to parse from data in req.body
 app.use(cookieParser())
 

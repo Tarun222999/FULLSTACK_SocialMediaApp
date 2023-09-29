@@ -33,6 +33,7 @@ const theme = extendTheme({ config, styles, colors });
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
+  //react strictmode render every component two times in development mode
   <React.StrictMode>
     <RecoilRoot>
 
