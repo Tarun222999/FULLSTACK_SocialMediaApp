@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom"
 import Actions from "./Actions"
 import useShowToast from "../hooks/useShowToast"
 const Posts = ({ post, postedBy }) => {
-    const [liked, setLiked] = useState(false);
+
     const [user, setUser] = useState(null);
     const showToast = useShowToast();
     const navigate = useNavigate()
@@ -139,16 +139,10 @@ const Posts = ({ post, postedBy }) => {
                     }
 
                     <Flex gap={3} my={1}>
-                        <Actions liked={liked} setLiked={setLiked} />
+                        <Actions post={post} />
                     </Flex>
 
 
-                    <Flex gap={2} alignItems={'center'}>
-                        <Text color={'gray.light'} fontSize={'sm'} >{post.likes.length} likes</Text>
-                        <Box w={0.5} borderRadius={'full'} bg={'gray.light'}></Box>
-                        <Text color={'gray.light'} fontSize={'sm'} >{post.replies.length} replies</Text>
-
-                    </Flex>
                 </Flex>
 
             </Flex>

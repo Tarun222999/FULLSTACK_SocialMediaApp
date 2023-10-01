@@ -111,10 +111,11 @@ export const likeUnlikePost = async (req, res) => {
 export const replyToPost = async (req, res) => {
     try {
         const { text } = req.body;
-        const postId = req.params._id;
+        const postId = req.params.id;
         const userId = req.user._id;
         const userProfilePic = req.user.profilePic;
         const username = req.user.username;
+
 
 
         if (!text) {
