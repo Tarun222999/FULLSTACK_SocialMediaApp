@@ -1,30 +1,36 @@
 import {
-    Box, Flex, Text, Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    useDisclosure,
-    ModalCloseButton,
+    Box,
+    Button,
+    Flex,
     FormControl,
     Input,
-    Button
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text,
+    useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
+import postAtom from "../atoms/postAtom";
 
-const Actions = ({ post: post_ }) => {
+const Actions = ({ post }) => {
     const user = useRecoilValue(userAtom);
-    const showToast = useShowToast();
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [post, setPost] = useState(post_);
+    const [liked, setLiked] = useState(post.likes.includes(user?._id));
+    const [posts, setPosts] = useRecoilState(postAtom);
     const [isLiking, setIsLiking] = useState(false);
-    const [liked, setLiked] = useState(post_?.likes.includes(user?._id));
-    const [reply, setReply] = useState('');
     const [isReplying, setIsReplying] = useState(false);
+    const [reply, setReply] = useState("");
+
+    const showToast = useShowToast();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     const handleLikeAndUnlike = async () => {
         if (!user) return showToast("Error", "You must be logged in to like a post", "error");
         if (isLiking) return;
@@ -41,10 +47,22 @@ const Actions = ({ post: post_ }) => {
 
             if (!liked) {
                 // add the id of the current user to post.likes array
-                setPost({ ...post, likes: [...post.likes, user._id] });
+                const updatedPosts = posts.map((p) => {
+                    if (p._id === post._id) {
+                        return { ...p, likes: [...p.likes, user._id] };
+                    }
+                    return p;
+                });
+                setPosts(updatedPosts);
             } else {
                 // remove the id of the current user from post.likes array
-                setPost({ ...post, likes: post.likes.filter((id) => id !== user._id) });
+                const updatedPosts = posts.map((p) => {
+                    if (p._id === post._id) {
+                        return { ...p, likes: p.likes.filter((id) => id !== user._id) };
+                    }
+                    return p;
+                });
+                setPosts(updatedPosts);
             }
 
             setLiked(!liked);
@@ -69,8 +87,15 @@ const Actions = ({ post: post_ }) => {
             });
             const data = await res.json();
             if (data.error) return showToast("Error", data.error, "error");
-
-            setPost({ ...post, replies: [...post.replies, data.reply] });
+            console.log(data);
+            const updatedPosts = posts.map((p) => {
+                if (p._id === post._id) {
+                    // console.log({ ...p, replies: [...p.replies, data] });
+                    return { ...p, replies: [...p.replies, data] };
+                }
+                return p;
+            });
+            setPosts(updatedPosts);
             showToast("Success", "Reply posted successfully", "success");
             onClose();
             setReply("");
@@ -80,6 +105,7 @@ const Actions = ({ post: post_ }) => {
             setIsReplying(false);
         }
     };
+
     return (
         <Flex flexDirection='column'>
             <Flex gap={3} my={2} onClick={(e) => e.preventDefault()}>
@@ -100,9 +126,15 @@ const Actions = ({ post: post_ }) => {
                     ></path>
                 </svg>
 
-                <svg aria-label='Comment' color='' fill='' height='20' role='img' viewBox='0 0 24 24' width='20'
+                <svg
+                    aria-label='Comment'
+                    color=''
+                    fill=''
+                    height='20'
+                    role='img'
+                    viewBox='0 0 24 24'
+                    width='20'
                     onClick={onOpen}
-
                 >
                     <title>Comment</title>
                     <path
@@ -114,55 +146,39 @@ const Actions = ({ post: post_ }) => {
                     ></path>
                 </svg>
 
-
                 <RepostSvg />
                 <ShareSvg />
-
             </Flex>
 
             <Flex gap={2} alignItems={"center"}>
                 <Text color={"gray.light"} fontSize='sm'>
-                    {post?.replies.length} replies
+                    {post.replies.length} replies
                 </Text>
                 <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
                 <Text color={"gray.light"} fontSize='sm'>
-                    {post?.likes.length} likes
+                    {post.likes.length} likes
                 </Text>
             </Flex>
 
-
-
-
-
-            <Modal
-
-                isOpen={isOpen}
-                onClose={onClose}
-            >
+            <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader></ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody pb={6} >
+                    <ModalBody pb={6}>
                         <FormControl>
-
-                            <Input placeholder='Reply goes here'
+                            <Input
+                                placeholder='Reply goes here..'
                                 value={reply}
-                                onChange={(e) => { setReply(e.target.value) }}
-
+                                onChange={(e) => setReply(e.target.value)}
                             />
                         </FormControl>
-
-
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme='blue' size={'sm'} mr={3}
-                            onClick={handleReply}
-                        >
+                        <Button colorScheme='blue' size={"sm"} mr={3} isLoading={isReplying} onClick={handleReply}>
                             Reply
                         </Button>
-
                     </ModalFooter>
                 </ModalContent>
             </Modal>
