@@ -175,7 +175,7 @@ export const getFeedPosts = async (req, res) => {
 
 export const getUserPosts = async (req, res) => {
     const { username } = req.params;
-    console.log(username);
+
     try {
         const user = await User.findOne({ username });
         if (!user) {
