@@ -1,6 +1,7 @@
 
 import Conversation from '../models/conversationModel.js'
 import Message from "../models/messageModel.js";
+import { getRecipientSocketId, io } from "../socket/socket.js";
 export const sendMessage = async (req, res) => {
     try {
         const { recipientId, message } = req.body;
@@ -37,6 +38,13 @@ export const sendMessage = async (req, res) => {
                 },
             }),
         ]);
+
+
+        const recipientSocketId = getRecipientSocketId(recipientId);
+        if (recipientSocketId) {
+            io.to(recipientSocketId).emit("newMessage", newMessage);
+        }
+
         res.status(201).json(newMessage);
 
     } catch (error) {
@@ -73,13 +81,20 @@ export const getMessages = async (req, res) => {
     }
 }
 
-export const getConversations = async (req, res) => {
+export async function getConversations(req, res) {
+    const userId = req.user._id;
     try {
-        const userId = req.user._id;
         const conversations = await Conversation.find({ participants: userId }).populate({
             path: "participants",
-            //fields username profilepic
-            select: "username profilepic"
+            select: "username profilePic",
+        });
+
+        //remove the current user from the participants array
+
+        conversations.forEach(conversation => {
+            conversation.participants = conversation.participants.filter(
+                participant => participant._id.toString() !== userId.toString()
+            )
         })
 
         res.status(200).json(conversations);

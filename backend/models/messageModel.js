@@ -1,13 +1,14 @@
-import mongoose from 'mongoose'
-const messgaeSchema = new mongoose.Schema({
-    //a message is realted to a convo
-    conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
-    //a message is related a sender
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    //msg type
-    text: String,
-}, { timestamps: true });
+import mongoose from "mongoose";
 
-const Message = mongoose.model('Message', messgaeSchema);
+const messageSchema = new mongoose.Schema(
+    {
+        conversationId: { type: mongoose.Schema.Types.ObjectId, ref: "Conversation" },
+        sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        text: String,
+    },
+    { timestamps: true }
+);
+
+const Message = mongoose.model("Message", messageSchema);
 
 export default Message;
