@@ -9,6 +9,7 @@ import { FiLogOut } from "react-icons/fi";
 import useLogout from '../hooks/useLogout';
 import authScreenAtom from '../atoms/authAtom';
 import { BsFillChatQuoteFill } from "react-icons/bs";
+import { RiVideoChatLine } from "react-icons/ri";
 const Header = () => {
     const user = useRecoilValue(userAtom)
     const logout = useLogout();
@@ -43,6 +44,9 @@ const Header = () => {
                     </Link>
                     <Link as={RouterLink} to={`/chat`}>
                         <BsFillChatQuoteFill size={20} />
+                    </Link>
+                    <Link as={RouterLink} to={`/video`}>
+                        <RiVideoChatLine size={20} />
                     </Link>
                     <Button size={"xs"} onClick={logout}>
                         <FiLogOut size={20} />

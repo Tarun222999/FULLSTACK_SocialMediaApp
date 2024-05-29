@@ -46,6 +46,25 @@ io.on('connection', (socket) => {
         delete userSocketMap[userId];
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
     })
+
+
+
+    socket.on('join-room',(roomId,id)=>{
+        console.log(`a new user with ${id} joined room ${roomId}`)
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-connect',id)
+    })
+    
+    socket.on('user-toggle-audio', (userId, roomId) => {
+        console.log("toggle audio")
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-toggle-audio', userId)
+    })
+
+    socket.on('user-toggle-video', (userId, roomId) => {
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-toggle-video', userId)
+    })
 })
 
 export { io, server, app }

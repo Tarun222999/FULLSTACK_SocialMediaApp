@@ -12,6 +12,8 @@ import LogoutButton from "./components/LogoutButton"
 import UpdateProfilePage from "./pages/UpdateProfilePage"
 import CreatePost from "./components/CreatePost"
 import ChatPage from "./pages/ChatPage"
+import VideoPage from "./pages/VideoPage"
+import VideoChat from "./pages/VideoChat"
 function App() {
 
   const user = useRecoilValue(userAtom);
@@ -31,6 +33,8 @@ function App() {
           ) : (<UserPage />)} />
           <Route path='/:username/post/:pid' element={user ? <PostPage /> : <Navigate to='/auth' />} />
           <Route path='/chat' element={user ? <ChatPage /> : <Navigate to={"/auth"} />} />
+          <Route path='/video' element={user ? <VideoPage /> : <Navigate to={"/auth"} />} />
+          <Route path='/videochat/:roomId' element={user ? <VideoChat /> : <Navigate to={"/auth"} />} />
         </Routes>
 
         {/* {user && <CreatePost />} */}
